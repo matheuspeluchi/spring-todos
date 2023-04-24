@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import com.mpr.todo.application.DTO.ActivityDTO;
+import com.mpr.todo.application.exceptions.InvalidInputException;
 import com.mpr.todo.application.exceptions.NotFoundException;
 import com.mpr.todo.infra.models.Task;
 import com.mpr.todo.infra.repositories.TaskRepository;
@@ -15,6 +17,9 @@ public class TaskService {
 
   @Autowired
   private TaskRepository repository;
+
+  @Autowired
+  private BoredApiService boredApiService;
 
 
   public Task create(Task task) {
@@ -34,10 +39,26 @@ public class TaskService {
   }
 
   public void delete(Long id) {
-
+    if (id == null) {
+      throw new InvalidInputException();
+    }
+    repository.deleteById(id);
   }
 
   public Task update(Task task) {
-    return new Task();
+    if (task.getId() == null) {
+      throw new InvalidInputException();
+    }
+    return repository.save(task);
+  }
+
+
+  public Task generateRandon() {
+    ActivityDTO activity = boredApiService.getBoredActivity();
+    Task task = new Task();
+    task.setTitle(activity.getActivity());
+    task.setDescription(activity.getType() + " task");
+
+    return create(task);
   }
 }

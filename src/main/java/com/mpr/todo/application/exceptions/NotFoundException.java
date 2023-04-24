@@ -1,6 +1,6 @@
 package com.mpr.todo.application.exceptions;
 
-public class NotFoundException extends InvalidInputException {
+public class NotFoundException extends RuntimeException {
 
   public NotFoundException() {
     super("Resource not found");
